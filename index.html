@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAIZSOOQ - Business Manager</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
+        .theme-blue { background-color: #2563eb; }
+        .theme-lavender { background-color: #a78bfa; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xl">K</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide text-blue-900">KAIZSOOQ</h1>
+                    <p class="text-xs text-gray-500">LEDI (Blue) & BEBI (Baby Lavender)</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-6 font-medium">
+                <button onclick="switchTab('dashboard')" class="nav-link text-blue-600 hover:text-blue-800 cursor-pointer"><i class="fa-solid fa-chart-pie"></i> ഡാഷ്‌ബോർഡ്</button>
+                <button onclick="switchTab('customers')" class="nav-link text-gray-600 hover:text-blue-800 cursor-pointer"><i class="fa-solid fa-users"></i> കസ്റ്റമേഴ്സ്</button>
+                <button onclick="switchTab('store')" class="nav-link text-gray-600 hover:text-blue-800 cursor-pointer"><i class="fa-solid fa-store"></i> ഐറ്റം സ്റ്റോർ</button>
+                <button onclick="switchTab('employees')" class="nav-link text-gray-600 hover:text-blue-800 cursor-pointer"><i class="fa-solid fa-user-tie"></i> എംപ്ലോയീസ്</button>
+                <button onclick="switchTab('analytics')" class="nav-link text-gray-600 hover:text-blue-800 cursor-pointer"><i class="fa-solid fa-chart-line"></i> അനാലിസിസ്</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 flex justify-around py-3 z-50">
+        <button onclick="switchTab('dashboard')" class="text-blue-600 text-center"><i class="fa-solid fa-chart-pie text-lg"></i><span class="block text-[10px]">ഡാഷ്‌ബോർഡ്</span></button>
+        <button onclick="switchTab('customers')" class="text-gray-600 text-center"><i class="fa-solid fa-users text-lg"></i><span class="block text-[10px]">കസ്റ്റമർ</span></button>
+        <button onclick="switchTab('store')" class="text-gray-600 text-center"><i class="fa-solid fa-store text-lg"></i><span class="block text-[10px]">സ്റ്റോർ</span></button>
+        <button onclick="switchTab('employees')" class="text-gray-600 text-center"><i class="fa-solid fa-user-tie text-lg"></i><span class="block text-[10px]">എംപ്ലോയ്</span></button>
+        <button onclick="switchTab('analytics')" class="text-gray-600 text-center"><i class="fa-solid fa-chart-line text-lg"></i><span class="block text-[10px]">അനാലിസിസ്</span></button>
+    </div>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-6 mb-16 md:mb-6">
+
+        <!-- 1. DASHBOARD TAB -->
+        <section id="tab-dashboard" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-blue-600">
+                    <p class="text-sm text-gray-500 font-medium">ടോട്ടൽ ബിസിനസ് റെവന്യൂ</p>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-1" id="dash-total-revenue">₹0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-green-600">
+                    <p class="text-sm text-gray-500 font-medium">ടോട്ടൽ പ്രോഫിറ്റ്</p>
+                    <h3 class="text-2xl font-bold text-green-600 mt-1" id="dash-total-profit">₹0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-purple-600">
+                    <p class="text-sm text-gray-500 font-medium">ഓണർ ഏണിംഗ്സ് (Owner)</p>
+                    <h3 class="text-2xl font-bold text-purple-600 mt-1" id="dash-owner-earning">₹0</h3>
+                    <p class="text-xs text-gray-400 mt-1"><span id="dash-owner-orders">0</span> ഓർഡറുകളിൽ നിന്ന്</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-amber-500">
+                    <p class="text-sm text-gray-500 font-medium">ഓർഡർ സ്റ്റാറ്റസ്</p>
+                    <p class="text-sm font-semibold mt-1">കംപ്ലീറ്റഡ്: <span id="dash-completed-orders" class="text-green-600 font-bold">0</span></p>
+                    <p class="text-sm font-semibold">പെൻഡിങ്: <span id="dash-pending-orders" class="text-amber-600 font-bold">0</span></p>
+                </div>
+            </div>
+
+            <!-- Platform Wise Stats (LEDI vs BEBI) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- LEDI (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 p-5 rounded-xl shadow">
+                    <h4 class="text-lg font-bold text-blue-900 flex items-center justify-between">
+                        <span><i class="fa-solid fa-shirt"></i> LEDI (Blue Platform)</span>
+                        <span class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">Lady Theme</span>
+                    </h4>
+                    <div class="grid grid-cols-3 gap-3 mt-4">
+                        <div class="bg-white p-3 rounded shadow-sm text-center">
+                            <span class="text-xs text-gray-500">റെവന്യൂ</span>
+                            <p class="font-bold text-blue-700" id="ledi-revenue">₹0</p>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm text-center">
+                            <span class="text-xs text-gray-500">പ്രോഫിറ്റ്</span>
+                            <p class="font-bold text-green-600" id="ledi-profit">₹0</p>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm text-center">
+                            <span class="text-xs text-gray-500">പെൻഡിങ്/കമ്പ്ലീറ്റ്</span>
+                            <p class="font-bold text-gray-700"><span id="ledi-pending">0</span> / <span id="ledi-completed">0</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BEBI (Lavender) -->
+                <div class="bg-purple-50 border border-purple-200 p-5 rounded-xl shadow">
+                    <h4 class="text-lg font-bold text-purple-900 flex items-center justify-between">
+                        <span><i class="fa-solid fa-baby-carriage"></i> BEBI (Baby Lavender)</span>
+                        <span class="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">Baby Theme</span>
+                    </h4>
+                    <div class="grid grid-cols-3 gap-3 mt-4">
+                        <div class="bg-white p-3 rounded shadow-sm text-center">
+                            <span class="text-xs text-gray-500">റെവന്യൂ</span>
+                            <p class="font-bold text-purple-700" id="bebi-revenue">₹0</p>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm text-center">
+                            <span class="text-xs text-gray-500">പ്രോഫിറ്റ്</span>
+                            <p class="font-bold text-green-600" id="bebi-profit">₹0</p>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm text-center">
+                            <span class="text-xs text-gray-500">പെൻഡിങ്/കമ്പ്ലീറ്റ്</span>
+                            <p class="font-bold text-gray-700"><span id="bebi-pending">0</span> / <span id="bebi-completed">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Upcoming Deliveries -->
+            <div class="bg-white p-5 rounded-xl shadow">
+                <h4 class="font-bold text-gray-800 mb-4"><i class="fa-solid fa-truck-fast text-blue-600"></i> അടുത്തതായി ഡെലിവറി ചെയ്യേണ്ട 2 ആളുകൾ</h4>
+                <div id="upcoming-deliveries" class="space-y-3">
+                    <!-- Dynamic List -->
+                    <p class="text-gray-400 text-sm">ഡെലിവറി ഡേറ്റുകൾ ഒന്നും ലഭ്യമല്ല.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. CUSTOMERS TAB -->
+        <section id="tab-customers" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-800">കസ്റ്റമർ മാനേജ്‌മെന്റ്</h2>
+                <button onclick="openCustomerModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow cursor-pointer"><i class="fa-solid fa-user-plus"></i> ആഡ് കസ്റ്റമർ</button>
+            </div>
+
+            <!-- Tabs for Pending / Completed -->
+            <div class="flex space-x-2 border-b border-gray-200">
+                <button onclick="switchCustomerSubTab('pending')" id="btn-cust-pending" class="py-2 px-4 border-b-2 border-blue-600 font-semibold text-blue-600 cursor-pointer">പെൻഡിങ് ഓർഡറുകൾ</button>
+                <button onclick="switchCustomerSubTab('completed')" id="btn-cust-completed" class="py-2 px-4 font-semibold text-gray-500 cursor-pointer">കപ്ലീറ്റഡ് ഓർഡറുകൾ</button>
+            </div>
+
+            <!-- Customer Lists -->
+            <div id="customer-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- 3. ITEM STORE TAB -->
+        <section id="tab-store" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-800">ഐറ്റം സ്റ്റോർ (ഡ്രസ്സുകൾ)</h2>
+                <button onclick="openStoreModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow cursor-pointer"><i class="fa-solid fa-plus"></i> പുതിയ ഐറ്റം ആഡ് ചെയ്യുക</button>
+            </div>
+
+            <div id="store-items-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- 4. EMPLOYEES TAB -->
+        <section id="tab-employees" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-800">എംപ്ലോയ് മാനേജ്‌മെന്റ്</h2>
+                <button onclick="openEmployeeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow cursor-pointer"><i class="fa-solid fa-user-plus"></i> പുതിയ എംപ്ലോയ്</button>
+            </div>
+
+            <div id="employee-list-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- 5. ANALYTICS TAB -->
+        <section id="tab-analytics" class="hidden space-y-6">
+            <h2 class="text-xl font-bold text-gray-800">ഡാറ്റ അനാലിസിസ് & റിപ്പോർട്ട്</h2>
+            <div class="bg-white p-6 rounded-xl shadow space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">ആരംഭ തീയതി</label>
+                        <input type="date" id="report-start-date" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">അവസാന തീയതി</label>
+                        <input type="date" id="report-end-date" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                </div>
+                <button onclick="generateReport()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer">റിപ്പോർട്ട് കാണുക</button>
+                <div id="analytics-result" class="mt-4 p-4 bg-gray-50 rounded-lg border">
+                    <p class="text-gray-500 text-sm">തീയതികൾ തിരഞ്ഞെടുത്ത് റിപ്പോർട്ട് പരിശോധിക്കുക.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modals will go here -->
+    <!-- Customer Modal -->
+    <div id="customer-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold mb-4" id="customer-modal-title">പുതിയ കസ്റ്റമറെ ചേർക്കുക</h3>
+            <form id="customer-form" onsubmit="saveCustomer(event)" class="space-y-4">
+                <input type="hidden" id="cust-edit-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium">പ്ലാറ്റ്‌ഫോം (Platform)</label>
+                        <select id="cust-platform" class="w-full mt-1 p-2 border rounded-lg">
+                            <option value="LEDI">LEDI (Blue)</option>
+                            <option value="BEBI">BEBI (Baby Lavender)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">കസ്റ്റമറുടെ പേര്</label>
+                        <input type="text" id="cust-name" required class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">വാട്സാപ്പ് നമ്പർ</label>
+                        <input type="text" id="cust-whatsapp" required class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">ഡെലിവറി തീയതി</label>
+                        <input type="date" id="cust-delivery-date" required class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">ഐറ്റം കോഡ് (ഡ്രസ്സ്)</label>
+                        <select id="cust-item-code" onchange="fillItemDetails()" class="w-full mt-1 p-2 border rounded-lg">
+                            <option value="">സ്റ്റോറിൽ നിന്നും തിരഞ്ഞെടുക്കുക</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">ഡ്രസ്സിന്റെ പേര്</label>
+                        <input type="text" id="cust-dress-name" required class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">ടോട്ടൽ കോസ്റ്റ് (Price)</label>
+                        <input type="number" id="cust-total-cost" required oninput="calculateOwnerAndProfit()" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">അഡ്വാൻസ് എമൗണ്ട്</label>
+                        <input type="number" id="cust-advance" required oninput="calculateOwnerAndProfit()" class="w-full mt-1 p-2 border rounded-lg">
+                        <p class="text-xs text-blue-600 mt-1" id="advance-material-hint">ബാലൻസ്: ₹0</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">മെറ്റീരിയൽ കോസ്റ്റ്</label>
+                        <input type="number" id="cust-material-cost" value="0" required oninput="calculateOwnerAndProfit()" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">ഡെലിവറി ചാർജ്</label>
+                        <input type="number" id="cust-delivery-charge" value="0" required oninput="calculateOwnerAndProfit()" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">സ്റ്റിച്ചിംഗ് ചാർജ്</label>
+                        <input type="number" id="cust-stitching-charge" value="0" required oninput="calculateOwnerAndProfit()" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">ജോലി ചെയ്യുന്ന എംപ്ലോയ്</label>
+                        <select id="cust-employee" class="w-full mt-1 p-2 border rounded-lg">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Measurements -->
+                <div class="border-t pt-4">
+                    <label class="block text-sm font-medium mb-2">മെഷർമെന്റ് (Measurements)</label>
+                    <div class="flex space-x-4 mb-2">
+                        <label><input type="radio" name="meas-type" value="standard" checked onclick="toggleMeasType('standard')"> സ്റ്റാൻഡേർഡ്</label>
+                        <label><input type="radio" name="meas-type" value="manual" onclick="toggleMeasType('manual')"> മാനുവൽ</label>
+                    </div>
+                    <div id="manual-meas-box" class="hidden grid grid-cols-3 gap-2">
+                        <input type="text" id="meas-chest" placeholder="Chest" class="p-2 border rounded text-sm">
+                        <input type="text" id="meas-waist" placeholder="Waist" class="p-2 border rounded text-sm">
+                        <input type="text" id="meas-length" placeholder="Length" class="p-2 border rounded text-sm">
+                    </div>
+                </div>
+
+                <!-- Calculation Summary -->
+                <div class="bg-gray-100 p-3 rounded text-sm space-y-1">
+                    <p>ഓണർ ഏണിംഗ് (Owner Share): <span id="calc-owner" class="font-bold text-purple-600">₹0</span> (₹300 rule applied)</p>
+                    <p>ബിസിനസ് പ്രോഫിറ്റ്: <span id="calc-profit" class="font-bold text-green-600">₹0</span></p>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeCustomerModal()" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">റദ്ദാക്കുക</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold">സേവ് ചെയ്യുക</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Store Modal -->
+    <div id="store-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6">
+            <h3 class="text-lg font-bold mb-4">ഐറ്റം സ്റ്റോർ ആഡ് ചെയ്യുക</h3>
+            <form id="store-form" onsubmit="saveStoreItem(event)" class="space-y-4">
+                <input type="hidden" id="store-edit-id">
+                <div>
+                    <label class="block text-sm font-medium">ഡ്രസ്സിന്റെ പേര്</label>
+                    <input type="text" id="store-name" required class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">ഡ്രസ്സ് കോഡ്</label>
+                    <input type="text" id="store-code" required class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">പ്രൈസ് (₹)</label>
+                    <input type="number" id="store-price" required class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">ഇമേജ് (Max 10MB)</label>
+                    <input type="file" id="store-image" accept="image/*" class="w-full mt-1 p-2 border rounded-lg text-sm">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeStoreModal()" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">റദ്ദാക്കുക</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold">സേവ്</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Modal -->
+    <div id="employee-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6">
+            <h3 class="text-lg font-bold mb-4">എംപ്ലോയിയെ ചേർക്കുക</h3>
+            <form id="employee-form" onsubmit="saveEmployee(event)" class="space-y-4">
+                <input type="hidden" id="emp-edit-id">
+                <div>
+                    <label class="block text-sm font-medium">എംപ്ലോയിയുടെ പേര്</label>
+                    <input type="text" id="emp-name" required class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeEmployeeModal()" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">റദ്ദാക്കുക</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold">സേവ്</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Detail Modal -->
+    <div id="customer-detail-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-blue-900" id="detail-cust-name">കസ്റ്റമർ വിവരങ്ങൾ</h3>
+            <div id="customer-detail-content" class="text-sm space-y-2 text-gray-600">
+                <!-- Details -->
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="closeCustomerDetailModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">ക്ലോസ്</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // LocalStorage Data Initialization
+        let customers = JSON.parse(localStorage.getItem('kaiz_customers')) || [];
+        let storeItems = JSON.parse(localStorage.getItem('kaiz_store')) || [];
+        let employees = JSON.parse(localStorage.getItem('kaiz_employees')) || [];
+
+        let currentCustSubTab = 'pending';
+
+        function saveData() {
+            localStorage.setItem('kaiz_customers', JSON.stringify(customers));
+            localStorage.setItem('kaiz_store', JSON.stringify(storeItems));
+            localStorage.setItem('kaiz_employees', JSON.stringify(employees));
+            updateDashboard();
+            renderCustomers();
+            renderStore();
+            renderEmployees();
+            populateDropdowns();
+        }
+
+        // Navigation Tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+        }
+
+        function switchCustomerSubTab(subTab) {
+            currentCustSubTab = subTab;
+            if(subTab === 'pending') {
+                document.getElementById('btn-cust-pending').className = "py-2 px-4 border-b-2 border-blue-600 font-semibold text-blue-600 cursor-pointer";
+                document.getElementById('btn-cust-completed').className = "py-2 px-4 font-semibold text-gray-500 cursor-pointer";
+            } else {
+                document.getElementById('btn-cust-completed').className = "py-2 px-4 border-b-2 border-blue-600 font-semibold text-blue-600 cursor-pointer";
+                document.getElementById('btn-cust-pending').className = "py-2 px-4 font-semibold text-gray-500 cursor-pointer";
+            }
+            renderCustomers();
+        }
+
+        // Calculations & Dashboard Update
+        function updateDashboard() {
+            let totalRev = 0, totalProfit = 0, ownerEarning = 0, ownerOrdersCount = 0;
+            let completedCount = 0, pendingCount = 0;
+            let lediRev = 0, lediProfit = 0, lediPending = 0, lediCompleted = 0;
+            let bebiRev = 0, bebiProfit = 0, bebiPending = 0, bebiCompleted = 0;
+
+            customers.forEach(c => {
+                let expenses = Number(c.materialCost) + Number(c.deliveryCharge) + Number(c.stitchingCost);
+                let netAfterExpense = Number(c.totalCost) - expenses;
+                let ownerPart = netAfterExpense > 300 ? 300 : (netAfterExpense > 0 ? netAfterExpense : 0);
+                let profitPart = netAfterExpense > 300 ? netAfterExpense - 300 : 0;
+
+                totalRev += Number(c.totalCost);
+                totalProfit += profitPart;
+                ownerEarning += ownerPart;
+                if(ownerPart > 0) ownerOrdersCount++;
+
+                if(c.status === 'completed') {
+                    completedCount++;
+                    if(c.platform === 'LEDI') lediCompleted++;
+                    if(c.platform === 'BEBI') bebiCompleted++;
+                } else {
+                    pendingCount++;
+                    if(c.platform === 'LEDI') lediPending++;
+                    if(c.platform === 'BEBI') bebiPending++;
+                }
+
+                if(c.platform === 'LEDI') {
+                    lediRev += Number(c.totalCost);
+                    lediProfit += profitPart;
+                } else {
+                    bebiRev += Number(c.totalCost);
+                    bebiProfit += profitPart;
+                }
+            });
+
+            document.getElementById('dash-total-revenue').innerText = `₹${totalRev}`;
+            document.getElementById('dash-total-profit').innerText = `₹${totalProfit}`;
+            document.getElementById('dash-owner-earning').innerText = `₹${ownerEarning}`;
+            document.getElementById('dash-owner-orders').innerText = ownerOrdersCount;
+            document.getElementById('dash-completed-orders').innerText = completedCount;
+            document.getElementById('dash-pending-orders').innerText = pendingCount;
+
+            document.getElementById('ledi-revenue').innerText = `₹${lediRev}`;
+            document.getElementById('ledi-profit').innerText = `₹${lediProfit}`;
+            document.getElementById('ledi-pending').innerText = lediPending;
+            document.getElementById('ledi-completed').innerText = lediCompleted;
+
+            document.getElementById('bebi-revenue').innerText = `₹${bebiRev}`;
+            document.getElementById('bebi-profit').innerText = `₹${bebiProfit}`;
+            document.getElementById('bebi-pending').innerText = bebiPending;
+            document.getElementById('bebi-completed').innerText = bebiCompleted;
+
+            renderUpcomingDeliveries();
+        }
+
+        // Upcoming Deliveries (Next 2)
+        function renderUpcomingDeliveries() {
+            let container = document.getElementById('upcoming-deliveries');
+            let pendingCusts = customers.filter(c => c.status !== 'completed').sort((a,b) => new Date(a.deliveryDate) - new Date(b.deliveryDate));
+            
+            if(pendingCusts.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-sm">ഡെലിവറി പെൻഡിങ് ആയി ആരുമില്ല.</p>`;
+                return;
+            }
+
+            let html = '';
+            pendingCusts.slice(0, 2).forEach(c => {
+                html += `
+                    <div onclick="showCustomerDetail('${c.id}')" class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border hover:bg-blue-50 cursor-pointer">
+                        <div>
+                            <p class="font-bold text-gray-800">${c.name} <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">${c.platform}</span></p>
+                            <p class="text-xs text-gray-500">ഡ്രസ്സ്: ${c.dressName} (${c.itemCode})</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-red-600"><i class="fa-solid fa-calendar"></i> ${c.deliveryDate}</p>
+                            <span class="text-[10px] text-blue-600 underline">വിവരങ്ങൾ കാണുക</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Render Customers
+        function renderCustomers() {
+            let container = document.getElementById('customer-list-container');
+            let filtered = customers.filter(c => currentCustSubTab === 'completed' ? c.status === 'completed' : c.status !== 'completed');
+            
+            if(filtered.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-sm col-span-2">കസ്റ്റമേഴ്സ് വിവരങ്ങൾ ലഭ്യമല്ല.</p>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(c => {
+                html += `
+                    <div class="bg-white p-4 rounded-xl shadow border space-y-2">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-gray-800 cursor-pointer text-blue-600 hover:underline" onclick="showCustomerDetail('${c.id}')">${c.name}</h4>
+                            <span class="text-xs px-2 py-0.5 rounded ${c.platform === 'LEDI' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}">${c.platform}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">വാട്സാപ്പ്: ${c.whatsapp} | ഡെലിവറി: ${c.deliveryDate}</p>
+                        <p class="text-xs text-gray-500">ഐറ്റം: ${c.dressName} (${c.itemCode}) | പ്രൈസ്: ₹${c.totalCost}</p>
+                        <div class="flex justify-between items-center pt-2 border-t text-xs">
+                            ${c.status !== 'completed' ? 
+                                `<button onclick="markCompleted('${c.id}')" class="bg-green-600 text-white px-2.5 py-1 rounded font-semibold"><i class="fa-solid fa-check"></i> കംപ്ലീറ്റഡ് ആക്കുക</button>` : 
+                                `<span class="text-green-600 font-bold"><i class="fa-solid fa-circle-check"></i> കംപ്ലീറ്റഡ്</span>`
+                            }
+                            <div class="space-x-2">
+                                <button onclick="editCustomer('${c.id}')" class="text-blue-600"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteCustomer('${c.id}')" class="text-red-600"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Render Store Items
+        function renderStore() {
+            let container = document.getElementById('store-items-grid');
+            if(storeItems.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-sm col-span-4">സ്റ്റോറിൽ ഐറ്റങ്ങൾ ഒന്നും ചേർത്തിട്ടില്ല.</p>`;
+                return;
+            }
+            let html = '';
+            storeItems.forEach(item => {
+                html += `
+                    <div class="bg-white p-3 rounded-xl shadow border space-y-2">
+                        <img src="${item.image || 'https://via.placeholder.com/150'}" class="w-full h-32 object-cover rounded-lg">
+                        <h4 class="font-bold text-gray-800 text-sm">${item.name}</h4>
+                        <p class="text-xs text-gray-500">കോഡ്: ${item.code}</p>
+                        <p class="text-sm font-semibold text-blue-600">₹${item.price}</p>
+                        <div class="flex justify-end space-x-2 pt-1 border-t">
+                            <button onclick="editStoreItem('${item.id}')" class="text-blue-600 text-xs"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteStoreItem('${item.id}')" class="text-red-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Render Employees
+        function renderEmployees() {
+            let container = document.getElementById('employee-list-container');
+            if(employees.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-sm col-span-3">എംപ്ലോയീസ് ആരെയും ചേർത്തിട്ടില്ല.</p>`;
+                return;
+            }
+            let html = '';
+            employees.forEach(emp => {
+                let empCusts = customers.filter(c => c.employee === emp.name);
+                let completedWorks = empCusts.filter(c => c.status === 'completed').length;
+                let pendingWorks = empCusts.filter(c => c.status !== 'completed').length;
+                let totalEarned = empCusts.reduce((sum, c) => sum + Number(c.stitchingCost || 0), 0);
+
+                html += `
+                    <div class="bg-white p-4 rounded-xl shadow border space-y-2">
+                        <h4 class="font-bold text-gray-800 text-base">${emp.name}</h4>
+                        <p class="text-xs text-gray-500">ഏൺ ചെയ്ത തുക (Stitching): <span class="font-bold text-green-600">₹${totalEarned}</span></p>
+                        <p class="text-xs text-gray-500">കംപ്ലീറ്റ് ആയ വർക്കുകൾ: <span class="font-bold text-blue-600">${completedWorks}</span></p>
+                        <p class="text-xs text-gray-500">പെൻഡിങ് വർക്കുകൾ: <span class="font-bold text-amber-600">${pendingWorks}</span></p>
+                        <div class="flex justify-between items-center pt-2 border-t text-xs">
+                            <button onclick="showEmployeePending('${emp.name}')" class="text-blue-600 underline font-medium">പെൻഡിങ് മെഷർമെന്റ്സ്</button>
+                            <div class="space-x-2">
+                                <button onclick="editEmployee('${emp.id}')" class="text-blue-600"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteEmployee('${emp.id}')" class="text-red-600"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Populate Dropdowns
+        function populateDropdowns() {
+            let itemSelect = document.getElementById('cust-item-code');
+            let empSelect = document.getElementById('cust-employee');
+            
+            let itemHtml = '<option value="">ഐറ്റം തിരഞ്ഞെടുക്കുക</option>';
+            storeItems.forEach(i => {
+                itemHtml += `<option value="${i.code}" data-name="${i.name}" data-price="${i.price}">${i.code} - ${i.name}</option>`;
+            });
+            itemSelect.innerHTML = itemHtml;
+
+            let empHtml = '<option value="">എംപ്ലോയിയെ തിരഞ്ഞെടുക്കുക</option>';
+            employees.forEach(e => {
+                empHtml += `<option value="${e.name}">${e.name}</option>`;
+            });
+            empSelect.innerHTML = empHtml;
+        }
+
+        // Modal Controls
+        function openCustomerModal() {
+            document.getElementById('customer-modal').classList.remove('hidden');
+            document.getElementById('customer-form').reset();
+            document.getElementById('cust-edit-id').value = '';
+            document.getElementById('customer-modal-title').innerText = 'പുതിയ കസ്റ്റമറെ ചേർക്കുക';
+        }
+        function closeCustomerModal() { document.getElementById('customer-modal').classList.add('hidden'); }
+
+        function openStoreModal() {
+            document.getElementById('store-modal').classList.remove('hidden');
+            document.getElementById('store-form').reset();
+            document.getElementById('store-edit-id').value = '';
+        }
+        function closeStoreModal() { document.getElementById('store-modal').classList.add('hidden'); }
+
+        function openEmployeeModal() {
+            document.getElementById('employee-modal').classList.remove('hidden');
+            document.getElementById('employee-form').reset();
+            document.getElementById('emp-edit-id').value = '';
+        }
+        function closeEmployeeModal() { document.getElementById('employee-modal').classList.add('hidden'); }
+
+        function showCustomerDetail(id) {
+            let c = customers.find(x => x.id === id);
+            if(!c) return;
+            let totalCustOrders = customers.filter(x => x.whatsapp === c.whatsapp).length;
+            let totalCustRev = customers.filter(x => x.whatsapp === c.whatsapp).reduce((sum, x) => sum + Number(x.totalCost), 0);
+            
+            document.getElementById('detail-cust-name').innerText = c.name;
+            document.getElementById('customer-detail-content').innerHTML = `
+                <p><strong>വാട്സാപ്പ്:</strong> ${c.whatsapp}</p>
+                <p><strong>പ്ലാറ്റ്‌ഫോം:</strong> ${c.platform}</p>
+                <p><strong>ഐറ്റം:</strong> ${c.dressName} (${c.itemCode})</p>
+                <p><strong>ഡെലിവറി തീയതി:</strong> ${c.deliveryDate}</p>
+                <p><strong>ടോട്ടൽ ഓർഡറുകൾ (ഇതുവരെ):</strong> ${totalCustOrders}</p>
+                <p><strong>ഇതുവരെയുള്ള റെവന്യൂ:</strong> ₹${totalCustRev}</p>
+                <p><strong>സ്റ്റാറ്റസ്:</strong> ${c.status === 'completed' ? 'Completed' : 'Pending'}</p>
+            `;
+            document.getElementById('customer-detail-modal').classList.remove('hidden');
+        }
+        function closeCustomerDetailModal() { document.getElementById('customer-detail-modal').classList.add('hidden'); }
+
+        // Form Handlers
+        function saveStoreItem(e) {
+            e.preventDefault();
+            let id = document.getElementById('store-edit-id').value || Date.now().toString();
+            let name = document.getElementById('store-name').value;
+            let code = document.getElementById('store-code').value;
+            let price = document.getElementById('store-price').value;
+            let imageFile = document.getElementById('store-image').files[0];
+
+            let reader = new FileReader();
+            reader.onload = function(uploadEvent) {
+                let imageUrl = uploadEvent.target.result;
+                let existingIndex = storeItems.findIndex(i => i.id === id);
+                if(existingIndex >= 0) {
+                    storeItems[existingIndex] = { id, name, code, price, image: imageUrl || storeItems[existingIndex].image };
+                } else {
+                    storeItems.push({ id, name, code, price, image: imageUrl });
+                }
+                saveData();
+                closeStoreModal();
+            };
+            if(imageFile) {
+                reader.readAsDataURL(imageFile);
+            } else {
+                let existingIndex = storeItems.findIndex(i => i.id === id);
+                let imageUrl = existingIndex >= 0 ? storeItems[existingIndex].image : '';
+                if(existingIndex >= 0) {
+                    storeItems[existingIndex] = { id, name, code, price, image: imageUrl };
+                } else {
+                    storeItems.push({ id, name, code, price, image: imageUrl });
+                }
+                saveData();
+                closeStoreModal();
+            }
+        }
+
+        function saveEmployee(e) {
+            e.preventDefault();
+            let id = document.getElementById('emp-edit-id').value || Date.now().toString();
+            let name = document.getElementById('emp-name').value;
+            let existingIndex = employees.findIndex(i => i.id === id);
+            if(existingIndex >= 0) {
+                employees[existingIndex] = { id, name };
+            } else {
+                employees.push({ id, name });
+            }
+            saveData();
+            closeEmployeeModal();
+        }
+
+        function fillItemDetails() {
+            let select = document.getElementById('cust-item-code');
+            let opt = select.options[select.selectedIndex];
+            if(opt.value) {
+                document.getElementById('cust-dress-name').value = opt.getAttribute('data-name');
+                document.getElementById('cust-total-cost').value = opt.getAttribute('data-price');
+                calculateOwnerAndProfit();
+            }
+        }
+
+        function toggleMeasType(type) {
+            let box = document.getElementById('manual-meas-box');
+            if(type === 'manual') box.classList.remove('hidden');
+            else box.classList.add('hidden');
+        }
+
+        function calculateOwnerAndProfit() {
+            let totalCost = Number(document.getElementById('cust-total-cost').value) || 0;
+            let advance = Number(document.getElementById('cust-advance').value) || 0;
+            let materialCost = Number(document.getElementById('cust-material-cost').value) || 0;
+            let deliveryCharge = Number(document.getElementById('cust-delivery-charge').value) || 0;
+            let stitchingCost = Number(document.getElementById('cust-stitching-charge').value) || 0;
+
+            let balanceAdvance = advance - materialCost;
+            document.getElementById('advance-material-hint').innerText = `അഡ്വാൻസ് - മെറ്റീരിയൽ കോസ്റ്റ് ബാലൻസ്: ₹${balanceAdvance}`;
+
+            let totalExpenses = materialCost + deliveryCharge + stitchingCost;
+            let netRemaining = totalCost - totalExpenses;
+
+            let ownerAmount = netRemaining > 300 ? 300 : (netRemaining > 0 ? netRemaining : 0);
+            let businessProfit = netRemaining > 300 ? netRemaining - 300 : 0;
+
+            document.getElementById('calc-owner').innerText = `₹${ownerAmount}`;
+            document.getElementById('calc-profit').innerText = `₹${businessProfit}`;
+        }
+
+        function saveCustomer(e) {
+            e.preventDefault();
+            let id = document.getElementById('cust-edit-id').value || Date.now().toString();
+            let customerData = {
+                id,
+                platform: document.getElementById('cust-platform').value,
+                name: document.getElementById('cust-name').value,
+                whatsapp: document.getElementById('cust-whatsapp').value,
+                deliveryDate: document.getElementById('cust-delivery-date').value,
+                itemCode: document.getElementById('cust-item-code').value,
+                dressName: document.getElementById('cust-dress-name').value,
+                totalCost: document.getElementById('cust-total-cost').value,
+                advance: document.getElementById('cust-advance').value,
+                materialCost: document.getElementById('cust-material-cost').value,
+                deliveryCharge: document.getElementById('cust-delivery-charge').value,
+                stitchingCost: document.getElementById('cust-stitching-charge').value,
+                employee: document.getElementById('cust-employee').value,
+                status: 'pending'
+            };
+
+            let existingIndex = customers.findIndex(i => i.id === id);
+            if(existingIndex >= 0) {
+                customerData.status = customers[existingIndex].status; // preserve status
+                customers[existingIndex] = customerData;
+            } else {
+                customers.push(customerData);
+            }
+            saveData();
+            closeCustomerModal();
+        }
+
+        function markCompleted(id) {
+            let c = customers.find(x => x.id === id);
+            if(c) {
+                c.status = 'completed';
+                saveData();
+            }
+        }
+
+        function deleteCustomer(id) {
+            if(confirm('ഈ കസ്റ്റമറെ ഡിലീറ്റ് ചെയ്യണമെന്ന് ഉറപ്പാണോ?')) {
+                customers = customers.filter(x => x.id !== id);
+                saveData();
+            }
+        }
+
+        function editCustomer(id) {
+            let c = customers.find(x => x.id === id);
+            if(!c) return;
+            openCustomerModal();
+            document.getElementById('cust-edit-id').value = c.id;
+            document.getElementById('cust-platform').value = c.platform;
+            document.getElementById('cust-name').value = c.name;
+            document.getElementById('cust-whatsapp').value = c.whatsapp;
+            document.getElementById('cust-delivery-date').value = c.deliveryDate;
+            document.getElementById('cust-item-code').value = c.itemCode;
+            document.getElementById('cust-dress-name').value = c.dressName;
+            document.getElementById('cust-total-cost').value = c.totalCost;
+            document.getElementById('cust-advance').value = c.advance;
+            document.getElementById('cust-material-cost').value = c.materialCost;
+            document.getElementById('cust-delivery-charge').value = c.deliveryCharge;
+            document.getElementById('cust-stitching-charge').value = c.stitchingCost;
+            document.getElementById('cust-employee').value = c.employee;
+            calculateOwnerAndProfit();
+            document.getElementById('customer-modal-title').innerText = 'കസ്റ്റമർ വിവരങ്ങൾ എഡിറ്റ് ചെയ്യുക';
+        }
+
+        function deleteStoreItem(id) {
+            if(confirm('ഈ ഐറ്റം ഡിലീറ്റ് ചെയ്യണോ?')) {
+                storeItems = storeItems.filter(x => x.id !== id);
+                saveData();
+            }
+        }
+
+        function editStoreItem(id) {
+            let item = storeItems.find(x => x.id === id);
+            if(!item) return;
+            openStoreModal();
+            document.getElementById('store-edit-id').value = item.id;
+            document.getElementById('store-name').value = item.name;
+            document.getElementById('store-code').value = item.code;
+            document.getElementById('store-price').value = item.price;
+        }
+
+        function deleteEmployee(id) {
+            if(confirm('ഈ എംപ്ലോയിയെ ഡിലീറ്റ് ചെയ്യണോ?')) {
+                employees = employees.filter(x => x.id !== id);
+                saveData();
+            }
+        }
+
+        function editEmployee(id) {
+            let emp = employees.find(x => x.id === id);
+            if(!emp) return;
+            openEmployeeModal();
+            document.getElementById('emp-edit-id').value = emp.id;
+            document.getElementById('emp-name').value = emp.name;
+        }
+
+        function showEmployeePending(empName) {
+            let pendingCusts = customers.filter(c => c.employee === empName && c.status !== 'completed');
+            if(pendingCusts.length === 0) {
+                alert(`${empName}-ന് പെൻഡിങ് വർക്കുകൾ ഒന്നും ലഭ്യമല്ല.`);
+                return;
+            }
+            let msg = `${empName}-ന്റെ പെൻഡിങ് വർക്കുകൾ:\n\n`;
+            pendingCusts.forEach(c => {
+                msg += `- കസ്റ്റമർ: ${c.name}, ഡ്രസ്സ്: ${c.dressName}, ഡെലിവറി: ${c.deliveryDate}\n`;
+            });
+            alert(msg);
+        }
+
+        function generateReport() {
+            let startDate = document.getElementById('report-start-date').value;
+            let endDate = document.getElementById('report-end-date').value;
+            let resultBox = document.getElementById('analytics-result');
+
+            if(!startDate || !endDate) {
+                resultBox.innerHTML = `<p class="text-red-500 text-sm">ദയവായി രണ്ട് തീയതികളും തിരഞ്ഞെടുക്കുക.</p>`;
+                return;
+            }
+
+            let filtered = customers.filter(c => c.deliveryDate >= startDate && c.deliveryDate <= endDate);
+            let rev = filtered.reduce((sum, c) => sum + Number(c.totalCost), 0);
+            let completed = filtered.filter(c => c.status === 'completed').length;
+            let pending = filtered.filter(c => c.status !== 'completed').length;
+
+            resultBox.innerHTML = `
+                <h4 class="font-bold text-gray-800 mb-2">റിപ്പോർട്ട് (${startDate} മുതൽ ${endDate} വരെ)</h4>
+                <p>ടോട്ടൽ ഓർഡറുകൾ: <strong>${filtered.length}</strong></p>
+                <p>ടോട്ടൽ റെവന്യൂ: <strong class="text-blue-600">₹${rev}</strong></p>
+                <p>കപ്ലീറ്റഡ്: <strong class="text-green-600">${completed}</strong> | പെൻഡിങ്: <strong class="text-amber-600">${pending}</strong></p>
+            `;
+        }
+
+        // Initial Load
+        window.onload = function() {
+            saveData();
+        };
+    </script>
+</body>
+</html>
